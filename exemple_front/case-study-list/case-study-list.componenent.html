@@ -1,0 +1,118 @@
+<div>
+    <div
+        *ngIf="!(siteQuery.selectActive() | async)"
+    >
+        Please select a site above.
+    </div>
+
+    <ng-container *ngIf="siteQuery.selectActive() | async">
+        <div class="search-bar">
+            <div class="ui-line-title">Select a Case Study</div>
+                <i class="pi pi-search"></i>
+            <input
+                id="inputText"
+                type="text"
+                pInputText
+                placeholder="Search Case Study"
+                (input)="
+                    table?.filterGlobal($event.target.value, 'contains')
+                "
+            />
+        </div>
+        <p-table
+            id="case-studies-table"
+            #dt
+            [scrollable]="true"
+            [value]="caseStudie$ | async"
+            [globalFilterFields]="[
+                'blastFurnaceName',
+                'name',
+                'ownerName',
+                'comments',
+                'lastCalculatedDate'
+            ]"
+            selectionMode="single"
+            sortMode="multiple"
+            [multiSortMeta]="multiSortMeta"
+            (onRowSelect)="onRowSelect($event)"
+        >
+
+
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th pSortableColumn="blastFurnaceName">
+                        BF
+                        <p-sortIcon field="blastFurnaceName"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="name">
+                        Name
+                        <p-sortIcon field="name"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="ownerName">
+                        Owner
+                        <p-sortIcon field="ownerName"></p-sortIcon>
+                    </th>
+                    <th>
+                        Comments
+                    </th>
+                    <th pSortableColumn="isPublic">
+                        Access Type
+                        <p-sortIcon field="isPublic"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="lastCalculatedDate">
+                        Last Calculated Date
+                        <p-sortIcon field="lastCalculatedDate"></p-sortIcon>
+                    </th>
+                    <th class="ui-table-col-action">
+                        Actions
+                    </th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-caseStudy let-rowData>
+                <tr [pSelectableRow]="rowData">
+                    <td>{{ caseStudy.blastFurnaceName }}</td>
+                    <td>{{ caseStudy.name }}</td>
+                    <td>{{ caseStudy.ownerName }}</td>
+                    <td
+                        pTooltip="{{ caseStudy.comments }}"
+                    >
+                        {{ caseStudy.comments }}
+                    </td>
+                    <td>
+                        {{ caseStudy.isPublic ? "Public" : "Private" }}
+                    </td>
+                    <td>
+                        {{ caseStudy.lastCalculatedDate | date: "yyyy/MM/dd" }}
+                    </td>
+                    <td>
+                        <button
+                            pButton
+                            type="button"
+                            icon="pi pi-ellipsis-v"
+                            (click)="toggleMenu($event, caseStudy.id)"
+                            [contentLoading]="
+                                actionStateService.onChange(
+                                    'deleteCaseStudy',
+                                    caseStudy.id
+                                ) | async
+                            "
+                        ></button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+
+        <div>
+            <button
+                pButton
+                label="Create a New Case Study"
+                (click)="createCaseStudy()"
+            ></button>
+        </div>
+    </ng-container>
+</div>
+
+<p-menu #menu [popup]="true" [model]="menuItems"></p-menu>
+
+<app-case-study-dialog></app-case-study-dialog>

@@ -1,0 +1,23 @@
+<form [formGroup]="createCaseStudy" (ngSubmit)="onSubmit(createCaseStudy)">
+    <br>
+    <label class="inputLabel">
+      Name :
+    </label>
+    <input type="text" formControlName="name" maxlength="40" id="csName">
+  <p class="error" *ngIf="createCaseStudy.get('name').errors && 
+  createCaseStudy.get('name').errors.isUnique === false &&
+  createCaseStudy.get('name').dirty">The value "{{createCaseStudy.get('name').errors.csName}}" already exists for a case study.</p>
+    <br>
+    <br>
+    <label class="inputLabel">
+      Comment:
+    </label>
+    <textarea type="text" formControlName="comment" maxlength="255" id="csComments"></textarea>
+  
+    <br>
+    <br>
+    <p class="button" >
+      <button type="submit" [disabled]="!createCaseStudy.valid">{{edit ? "Edit" : "Create"}} </button>
+      <button type="button" (click)="cancel()"> Cancel</button>
+    </p>
+  </form>
